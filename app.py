@@ -6,25 +6,29 @@ import time
 st.title("Chatbot Legal POC - DataOffice")
 st.subheader("Haz tu consulta legal")
 
-# Inicializar estado de sesión si no existe
+# Inicializar estado
 if "pregunta" not in st.session_state:
     st.session_state.pregunta = ""
 if "respuesta_final" not in st.session_state:
     st.session_state.respuesta_final = None
 if "documentos" not in st.session_state:
     st.session_state.documentos = []
+if "enviada" not in st.session_state:
+    st.session_state.enviada = False
 
-# Botón para limpiar la pregunta y respuestas
+# Botón para limpiar todo
 if st.button("Nueva pregunta"):
     st.session_state.pregunta = ""
     st.session_state.respuesta_final = None
     st.session_state.documentos = []
+    st.session_state.enviada = False
 
 # Campo de texto
 st.session_state.pregunta = st.text_area("Escribe tu pregunta aquí", value=st.session_state.pregunta, height=150)
 
-# Botón para enviar
-if st.button("Enviar pregunta") and st.session_state.pregunta.strip():
+# Función para procesar la pregunta
+def enviar_pregunta():
+    st.session_state.enviada = True
     try:
         with st.spinner("El asistente está redactando la respuesta..."):
             url = "https://backend-chatbotlegal-poc-624205664083.us-central1.run.app/api/chatbotlegal"
@@ -39,8 +43,14 @@ if st.button("Enviar pregunta") and st.session_state.pregunta.strip():
             st.success("Respuesta generada correctamente.")
         else:
             st.error(f"Error en la respuesta: {data.get('message', 'Desconocido')}")
+            st.session_state.enviada = False
     except Exception as e:
         st.error(f"Error al procesar la solicitud: {e}")
+        st.session_state.enviada = False
+
+# Mostrar botón solo si no ha sido enviada
+if not st.session_state.enviada and st.session_state.pregunta.strip():
+    st.button("Enviar pregunta", key="btn_enviar", on_click=enviar_pregunta)
 
 # Mostrar resultados si existen
 if st.session_state.respuesta_final:
