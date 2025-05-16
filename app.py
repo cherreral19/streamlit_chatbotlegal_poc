@@ -31,7 +31,7 @@ def enviar_pregunta():
     st.session_state.enviada = True
     try:
         with st.spinner("El asistente está redactando la respuesta..."):
-            url = "https://backend-chatbotlegal-poc-624205664083.us-central1.run.app/api/chatbotlegal"
+            url = "https://backend-chatbot-legalpoc-624205664083.us-central1.run.app" #https://backend-chatbot-legalpoc-624205664083.us-central1.run.app
             payload = {"pregunta": st.session_state.pregunta}
             response = requests.post(url, json=payload)
             response.raise_for_status()
